@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="717.0" prefWidth="1155.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.loanCalculator.HelloController">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Amount" />
+      <Label layoutX="12.0" layoutY="45.0" text="Term" />
+      <Label layoutX="14.0" layoutY="78.0" text="Yearly Interest Rate" />
+      <Label layoutX="14.0" layoutY="107.0" text="Type" />
+      <Label layoutX="347.0" layoutY="45.0" text="months" />
+      <Label layoutX="229.0" layoutY="45.0" text="years" />
+      <RadioButton fx:id="linear" layoutX="92.0" layoutY="107.0" mnemonicParsing="false" selected="true" text="Linear">
+         <toggleGroup>
+            <ToggleGroup fx:id="type" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton layoutX="198.0" layoutY="107.0" mnemonicParsing="false" text="Annuity" toggleGroup="$type" />
+      <Button layoutX="14.0" layoutY="135.0" mnemonicParsing="false" onAction="#calculate" text="Calculate" />
+      <TextField fx:id="amount" layoutX="158.0" layoutY="10.0" prefHeight="24.0" prefWidth="183.0" />
+      <TextField fx:id="interestRate" layoutX="158.0" layoutY="74.0" prefHeight="24.0" prefWidth="64.0" />
+      <TextField fx:id="years" layoutX="158.0" layoutY="41.0" prefHeight="24.0" prefWidth="64.0" />
+      <TextField fx:id="months" layoutX="277.0" layoutY="41.0" prefHeight="24.0" prefWidth="64.0" />
+      <Label fx:id="invalidAlert" layoutX="103.0" layoutY="139.0" text="Invalid input" textFill="RED" visible="false" />
+      <TableView layoutX="404.0" layoutY="15.0" prefHeight="684.0" prefWidth="715.0">
+        <columns>
+          <TableColumn prefWidth="75.0" text="Month" />
+          <TableColumn fx:id="table" prefWidth="75.0" text="Left" />
+        </columns>
+      </TableView>
+   </children>
+</Pane>
