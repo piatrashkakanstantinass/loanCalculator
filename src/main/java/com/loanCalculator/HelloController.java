@@ -3,15 +3,16 @@ package com.loanCalculator;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 
-public class HelloController {
+public class HelloController implements Initializable {
     @FXML
     private TextField amount, years, months, interestRate;
 
@@ -22,7 +23,19 @@ public class HelloController {
     private Label invalidAlert;
 
     @FXML
-    private TableView tableView;
+    private TableView<LoanEntry> tableView;
+
+    @FXML
+    private TableColumn<LoanEntry, Integer> month;
+    @FXML
+    private TableColumn<LoanEntry, Double> left;
+    @FXML
+    private TableColumn<LoanEntry, Double> credit;
+    @FXML
+    private TableColumn<LoanEntry, Double> interest;
+    @FXML
+    private TableColumn<LoanEntry, Double> total;
+
 
     private ArrayList<LoanEntry> data;
 
@@ -51,5 +64,27 @@ public class HelloController {
         for (int i = 0; i < data.size(); ++i) {
             items.add(data.get(i));
         }
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        month.setCellValueFactory(new PropertyValueFactory<LoanEntry, Integer>("month"));
+        left.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("left"));
+        credit.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("credit"));
+        interest.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("interest"));
+        total.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("total"));
+
+        left.setCellFactory(c -> new TableCell<>() {
+            @Override
+            protected void updateItem(Double balance, boolean empty) {
+                super.updateItem(balance, empty);
+                if (balance == null || empty) {
+                    setText(null);
+                } else {
+                    setText(String.format("%.2f", balance.doubleValue()));
+                }
+            }
+        });
+        credit.setCellFactory();
     }
 }
