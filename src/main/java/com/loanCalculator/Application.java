@@ -1,17 +1,17 @@
 package com.loanCalculator;
 
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class Application extends javafx.application.Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1200, 750);
+        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
         stage.setTitle("Loan calculator");
         stage.setScene(scene);
         stage.show();
