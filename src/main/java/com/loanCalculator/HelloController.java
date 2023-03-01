@@ -73,18 +73,5 @@ public class HelloController implements Initializable {
         credit.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("credit"));
         interest.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("interest"));
         total.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("total"));
-
-        left.setCellFactory(c -> new TableCell<>() {
-            @Override
-            protected void updateItem(Double balance, boolean empty) {
-                super.updateItem(balance, empty);
-                if (balance == null || empty) {
-                    setText(null);
-                } else {
-                    setText(String.format("%.2f", balance.doubleValue()));
-                }
-            }
-        });
-        credit.setCellFactory();
     }
 }
