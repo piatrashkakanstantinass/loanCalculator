@@ -1,47 +1,58 @@
 package com.loanCalculator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class LoanCalculator {
 
-    private final double amount;
+    private final BigDecimal amount;
     private final int months;
     private final LoanType type;
-    private final double yearlyRate;
-    public LoanCalculator(double amount, int months, LoanType type, double yearlyRate) {
+    private final BigDecimal yearlyRate;
+    public LoanCalculator(BigDecimal amount, int months, LoanType type, BigDecimal yearlyRate) {
+        this.amount = amount.setScale(2, RoundingMode.HALF_UP);
+        this.months = months;
+        this.type = type;
+        this.yearlyRate = yearlyRate.setScale(2, RoundingMode.HALF_UP);
         if (
-                !Double.isFinite(amount) || amount < 0 ||
-                !Double.isFinite(yearlyRate) || yearlyRate < 0 ||
+                this.amount.compareTo(BigDecimal.ZERO) < 0 ||
+                this.yearlyRate.compareTo(BigDecimal.ZERO) < 0 ||
                 months <= 0
         )
             throw new NumberFormatException();
-        this.amount = amount;
-        this.months = months;
-        this.type = type;
-        this.yearlyRate = yearlyRate;
     }
 
     ArrayList<LoanEntry> generateTable() {
         ArrayList<LoanEntry> data = new ArrayList<>();
-        double left = amount;
-        for (int month = 1; left > 0; ++month) {
+        BigDecimal left = amount;
+        for (int month = 1; left.compareTo(BigDecimal.ZERO) > 0; ++month) {
             LoanEntry entry = new LoanEntry();
-            entry.left = left;
-            entry.month = month;
-            if (this.type == LoanType.ANNUITY) {
-                double i = yearlyRate / 1200;
-                double k = (i * Math.pow(1 + i, months))/(Math.pow(1 + i, months) - 1);
-                entry.interest = left * i;
-                entry.credit = amount * k - entry.interest;
-                if (!Double.isFinite(entry.credit) ||entry.credit < 0)
-                    entry.credit = amount / months;
+            entry.setLeft(left);
+            entry.setMonth(month);
+            // TODO: FIX LOGIC
+            if (type == LoanType.ANNUITY) {
+                BigDecimal i = yearlyRate.divide(BigDecimal.valueOf(1200), 2, RoundingMode.HALF_UP);
+                BigDecimal i1 = i.add(BigDecimal.ONE);
+                try {
+                    BigDecimal k = i.multiply(i1.pow(months)).divide(i1.pow(months).subtract(BigDecimal.ONE), 2, RoundingMode.HALF_UP);
+                    entry.setCredit(amount.multiply(k).subtract(entry.getInterest()));
+                    // (i * Math.pow(1 + i, months))/(Math.pow(1 + i, months) - 1);
+                } catch (ArithmeticException e) {
+                    entry.setCredit(amount.divide(BigDecimal.valueOf(months), 2, RoundingMode.HALF_UP));
+                }
+                entry.setInterest(left.multiply(i));
+                //entry.credit = amount * k - entry.interest;
+
+                /*if (!Double.isFinite(entry.credit) ||entry.credit < 0)
+                    entry.credit = amount / months;*/
             }
             else {
-                entry.credit = amount / months;
-                entry.interest = left / 100 * yearlyRate / 12;
+                entry.setCredit(amount.divide(BigDecimal.valueOf(months), 2, RoundingMode.HALF_UP));
+                entry.setInterest(left.multiply(yearlyRate).divide(BigDecimal.valueOf(1200), 2, RoundingMode.HALF_UP));
             }
-            entry.credit = Math.min(entry.credit, left);
-            left -= entry.credit;
+            entry.setCredit(entry.getCredit().min(left));
+            left = left.subtract(entry.getCredit());
             data.add(entry);
         }
         return data;

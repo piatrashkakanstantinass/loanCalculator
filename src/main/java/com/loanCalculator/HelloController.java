@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -28,13 +29,13 @@ public class HelloController implements Initializable {
     @FXML
     private TableColumn<LoanEntry, Integer> month;
     @FXML
-    private TableColumn<LoanEntry, Double> left;
+    private TableColumn<LoanEntry, BigDecimal> left;
     @FXML
-    private TableColumn<LoanEntry, Double> credit;
+    private TableColumn<LoanEntry, BigDecimal> credit;
     @FXML
-    private TableColumn<LoanEntry, Double> interest;
+    private TableColumn<LoanEntry, BigDecimal> interest;
     @FXML
-    private TableColumn<LoanEntry, Double> total;
+    private TableColumn<LoanEntry, BigDecimal> total;
 
 
     private ArrayList<LoanEntry> data;
@@ -48,10 +49,10 @@ public class HelloController implements Initializable {
             if (Math.min(yearsI, monthsI) < 0)
                 throw new NumberFormatException();
             LoanCalculator calc = new LoanCalculator(
-                    Double.parseDouble(amount.getText()),
+                    new BigDecimal(Double.parseDouble(amount.getText())),
                     yearsI * 12 + monthsI,
                     linear.isSelected() ? LoanType.LINEAR : LoanType.ANNUITY,
-                    Double.parseDouble(interestRate.getText())
+                    new BigDecimal(Double.parseDouble(interestRate.getText()))
             );
             data = calc.generateTable();
             invalidAlert.setVisible(false);
@@ -69,9 +70,9 @@ public class HelloController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         month.setCellValueFactory(new PropertyValueFactory<LoanEntry, Integer>("month"));
-        left.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("left"));
-        credit.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("credit"));
-        interest.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("interest"));
-        total.setCellValueFactory(new PropertyValueFactory<LoanEntry, Double>("total"));
+        left.setCellValueFactory(new PropertyValueFactory<LoanEntry, BigDecimal>("left"));
+        credit.setCellValueFactory(new PropertyValueFactory<LoanEntry, BigDecimal>("credit"));
+        interest.setCellValueFactory(new PropertyValueFactory<LoanEntry, BigDecimal>("interest"));
+        total.setCellValueFactory(new PropertyValueFactory<LoanEntry, BigDecimal>("total"));
     }
 }

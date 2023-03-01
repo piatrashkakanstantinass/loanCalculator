@@ -1,28 +1,47 @@
 package com.loanCalculator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class LoanEntry {
-    int month;
-    double left;
-    double interest;
-    double credit;
+    private int month;
+    private BigDecimal left = BigDecimal.ZERO;
+    private BigDecimal interest = BigDecimal.ZERO;
+    private BigDecimal credit = BigDecimal.ZERO;
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public void setLeft(BigDecimal left) {
+        this.left = left.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void setInterest(BigDecimal interest) {
+        this.interest = interest.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void setCredit(BigDecimal credit) {
+        this.credit = credit.setScale(2, RoundingMode.HALF_UP);
+    }
 
     public int getMonth() {
         return month;
     }
 
-    public double getLeft() {
+    public BigDecimal getLeft() {
         return left;
     }
 
-    public double getInterest() {
+    public BigDecimal getInterest() {
         return interest;
     }
 
-    public double getCredit() {
+    public BigDecimal getCredit() {
         return credit;
     }
 
-    public double getTotal() {
-        return interest + credit;
+    public BigDecimal getTotal() {
+        return interest.add(credit);
     }
 }
