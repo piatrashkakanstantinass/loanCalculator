@@ -1,4 +1,4 @@
-package com.loanCalculator;
+package com.coreCalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

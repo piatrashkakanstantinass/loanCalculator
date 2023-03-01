@@ -1,4 +1,4 @@
-package com.loanCalculator;
+package com.coreCalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,7 +23,7 @@ public class LoanCalculator {
             throw new NumberFormatException();
     }
 
-    ArrayList<LoanEntry> generateTable() {
+    public ArrayList<LoanEntry> generateTable() {
         ArrayList<LoanEntry> data = new ArrayList<>();
         BigDecimal left = amount;
         for (int month = 1; left.compareTo(BigDecimal.ZERO) > 0; ++month) {

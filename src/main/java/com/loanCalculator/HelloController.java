@@ -1,5 +1,8 @@
 package com.loanCalculator;
 
+import com.coreCalculator.LoanCalculator;
+import com.coreCalculator.LoanEntry;
+import com.coreCalculator.LoanType;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,7 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,6 +46,7 @@ public class HelloController implements Initializable {
 
 
     private ArrayList<LoanEntry> data;
+
 
     @FXML
     void calculate(ActionEvent event) {
@@ -104,12 +108,29 @@ public class HelloController implements Initializable {
     }
 
     @FXML
-    void saveFilter(ActionEvent event) {
+    void saveFile(ActionEvent event) {
         if (data == null)
             return;
         FileChooser fileChooser = new FileChooser();
-        Stage stage = (Stage) invalidAlert.getScene().getWindow();
-        fileChooser.showSaveDialog(stage);
+        fileChooser.setInitialFileName("output.csv");
+        Stage stage = (Stage) amount.getScene().getWindow();
+        File file = fileChooser.showSaveDialog(stage);
+        if (file == null)
+            return;
+        try {
+            FileOutputStream stream = new FileOutputStream(file);
+            PrintWriter writer = new PrintWriter(stream);
+            writer.println("Month,Left,Credit,Interest,Total");
+            for (LoanEntry entry: data) {
+                writer.println(entry.getMonth() + "," + entry.getLeft() + "," + entry.getCredit() + "," + entry.getInterest() + "," + entry.getTotal());
+            }
+            writer.flush();
+            stream.close();
+        } catch (FileNotFoundException e) {
+            return;
+        } catch (IOException e) {
+            return;
+        }
     }
 
     @Override

@@ -5,4 +5,6 @@ module com.example.demo {
 
     opens com.loanCalculator to javafx.fxml;
     exports com.loanCalculator;
+    exports com.coreCalculator;
+    opens com.coreCalculator to javafx.fxml;
 }

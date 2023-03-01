@@ -1,4 +1,4 @@
-package com.loanCalculator;
+package com.coreCalculator;
 
 public enum LoanType {
     ANNUITY,
