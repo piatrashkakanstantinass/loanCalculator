@@ -2,7 +2,6 @@ package com.loanCalculator;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -18,6 +17,10 @@ public class Application extends javafx.application.Application {
     }
 
     public static void main(String[] args) {
+        launch();
+    }
+
+    public void begin() {
         launch();
     }
 }

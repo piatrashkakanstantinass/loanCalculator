@@ -10,11 +10,17 @@ public class LoanCalculator {
     private final int months;
     private final LoanType type;
     private final BigDecimal yearlyRate;
-    public LoanCalculator(BigDecimal amount, int months, LoanType type, BigDecimal yearlyRate) {
+    private DelayInfo delayInfo;
+
+    public LoanCalculator(BigDecimal amount, int months, LoanType type, BigDecimal yearlyRate, DelayInfo delayInfo) {
         this.amount = amount.setScale(2, RoundingMode.HALF_UP);
-        this.months = months;
+        int delayDuration = 0;
+        if (delayInfo != null)
+            delayDuration = delayInfo.duration;
+        this.months = months + delayDuration;
         this.type = type;
         this.yearlyRate = yearlyRate.setScale(2, RoundingMode.HALF_UP);
+        this.delayInfo = delayInfo;
         if (
                 this.amount.compareTo(BigDecimal.ZERO) < 0 ||
                 this.yearlyRate.compareTo(BigDecimal.ZERO) < 0 ||
@@ -23,8 +29,8 @@ public class LoanCalculator {
             throw new NumberFormatException();
     }
 
-    public ArrayList<LoanEntry> generateTable() {
-        ArrayList<LoanEntry> data = new ArrayList<>();
+    public ArrayList<LoanEntry> generateTable(LoanType type) {
+        /*ArrayList<LoanEntry> data = new ArrayList<>();
         BigDecimal left = amount;
         for (int month = 1; left.compareTo(BigDecimal.ZERO) > 0; ++month) {
             LoanEntry entry = new LoanEntry();
@@ -45,7 +51,7 @@ public class LoanCalculator {
                 //entry.credit = amount * k - entry.interest;
 
                 /*if (!Double.isFinite(entry.credit) ||entry.credit < 0)
-                    entry.credit = amount / months;*/
+                    entry.credit = amount / months;
             }
             else {
                 entry.setCredit(amount.divide(BigDecimal.valueOf(months), 2, RoundingMode.HALF_UP));
@@ -55,6 +61,44 @@ public class LoanCalculator {
             left = left.subtract(entry.getCredit());
             data.add(entry);
         }
+        return data;*/
+        ArrayList<LoanEntry> data = new ArrayList<>();
+        BigDecimal left = amount;
+        int creditMonths = months;
+        if (delayInfo != null)
+            creditMonths -= delayInfo.duration;
+        for (int month = 1; month <= months; ++month) {
+            BigDecimal rate = yearlyRate;
+            boolean countCredit = true;
+            if (delayInfo != null && delayInfo.from <= month && month < delayInfo.duration + delayInfo.from) {
+                countCredit = false;
+                rate = delayInfo.rate;
+            }
+            LoanEntry entry = new LoanEntry();
+            entry.setLeft(left);
+            entry.setMonth(month);
+
+            if (type == LoanType.LINEAR) {
+                if (month == months)
+                    entry.setCredit(left);
+                else
+                    entry.setCredit(amount.divide(BigDecimal.valueOf(creditMonths), 2, RoundingMode.HALF_DOWN));
+                entry.setInterest(left.multiply(rate).divide(BigDecimal.valueOf(1200), 2, RoundingMode.HALF_UP));
+            }
+            else {
+
+            }
+
+            entry.setCredit(entry.getCredit().min(left));
+            if (!countCredit)
+                entry.setCredit(BigDecimal.ZERO);
+            left = left.subtract(entry.getCredit());
+            data.add(entry);
+        }
         return data;
+    }
+
+    public ArrayList<LoanEntry> generateTable() {
+        return generateTable(type);
     }
 }
