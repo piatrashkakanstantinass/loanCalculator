@@ -10,7 +10,7 @@ public class LoanCalculator {
     private final int months;
     private final LoanType type;
     private final BigDecimal yearlyRate;
-    private DelayInfo delayInfo;
+    private final DelayInfo delayInfo;
 
     public LoanCalculator(BigDecimal amount, int months, LoanType type, BigDecimal yearlyRate, DelayInfo delayInfo) {
         this.amount = amount.setScale(2, RoundingMode.HALF_UP);
@@ -67,6 +67,10 @@ public class LoanCalculator {
         int creditMonths = months;
         if (delayInfo != null)
             creditMonths -= delayInfo.duration;
+        BigDecimal i = yearlyRate.divide(BigDecimal.valueOf(1200), 100, RoundingMode.HALF_UP);
+        BigDecimal ip1 = i.add(BigDecimal.ONE);
+        BigDecimal k = i.multiply(ip1.pow(creditMonths)).divide(ip1.pow(creditMonths).subtract(BigDecimal.ONE), 100, RoundingMode.HALF_UP);
+        BigDecimal annuityTotal = k.multiply(amount).setScale(2, RoundingMode.HALF_UP);
         for (int month = 1; month <= months; ++month) {
             BigDecimal rate = yearlyRate;
             boolean countCredit = true;
@@ -77,20 +81,16 @@ public class LoanCalculator {
             LoanEntry entry = new LoanEntry();
             entry.setLeft(left);
             entry.setMonth(month);
-
-            if (type == LoanType.LINEAR) {
-                if (month == months)
-                    entry.setCredit(left);
-                else
-                    entry.setCredit(amount.divide(BigDecimal.valueOf(creditMonths), 2, RoundingMode.HALF_DOWN));
-                entry.setInterest(left.multiply(rate).divide(BigDecimal.valueOf(1200), 2, RoundingMode.HALF_UP));
+            entry.setInterest(left.multiply(rate).divide(BigDecimal.valueOf(1200), 2, RoundingMode.HALF_UP));
+            if (month == months)
+                entry.setCredit(left);
+            else if (type == LoanType.LINEAR) {
+                entry.setCredit(amount.divide(BigDecimal.valueOf(creditMonths), 2, RoundingMode.HALF_DOWN));
             }
-            else {
-                if (month == months)
-                    entry.setCredit(left);
-                else {
-
-                }
+            else { // ANNUITY
+                entry.setCredit(annuityTotal.subtract(entry.getInterest()));
+                if (entry.getCredit().compareTo(BigDecimal.ZERO) < 0)
+                    entry.setCredit(BigDecimal.ZERO);
             }
 
             entry.setCredit(entry.getCredit().min(left));
